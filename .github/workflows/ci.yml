@@ -10,7 +10,10 @@ jobs:
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 12
-      - run: npm ci
+      - uses: ianwalter/puppeteer-container@v4.0.0
+        with:
+          args: npm ci
       - run: npm run lint
       - uses: ianwalter/puppeteer-container@v4.0.0
-        run: npm test
+        with:
+          args: npm test

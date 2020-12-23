@@ -27,12 +27,17 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
-      - name: cucumber-js
         uses: ianwalter/puppeteer-container@v4.0.0
+      - name: 'build $RUN_COMMAND'
         run: |
           ARGS="${{ github.event.inputs.features }}"
           TAGS="${{ github.event.inputs.tags }}"
           if [[ ! -z "$TAGS" ]]; then
             ARGS="$ARGS --tags '$TAGS'"
           fi
-          npx cucumber-js -r src/index.js $ARGS "${{ github.event.inputs.args }}"
+          echo "RUN_COMMAND='npx cucumber-js -r src/index.js $ARGS ${{ github.event.inputs.args }}'" >> $GITHUB_ENV
+          echo "RUN_COMMAND: '$RUN_COMMAND'"
+      - name: cucumber-js
+        uses: ianwalter/puppeteer-container@v4.0.0
+        with:
+          args: ${{ github.env.RUN_COMMAND }}
