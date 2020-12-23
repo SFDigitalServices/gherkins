@@ -28,6 +28,7 @@ jobs:
           node-version: 12
       - run: npm ci
       - name: cucumber-js
+        uses: ianwalter/puppeteer-container@v4.0.0
         run: |
           ARGS="${{ github.event.inputs.features }}"
           TAGS="${{ github.event.inputs.tags }}"
