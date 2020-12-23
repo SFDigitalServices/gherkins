@@ -1,0 +1,23 @@
+{
+  "name": "gherkin-runner",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@cucumber/cucumber": "^7.0.0",
+    "dot-component": "^0.1.1",
+    "expect": "^26.6.2"
+  },
+  "devDependencies": {
+    "chromedriver": "^87.0.4",
+    "standard": "^16.0.3",
+    "webdriverio": "^6.10.11"
+  },
+  "scripts": {
+    "test": "cucumber-js -r src/index.js features/**/*.feature",
+    "lint": "standard src"
+  }
+}
