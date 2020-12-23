@@ -1,0 +1,39 @@
+name: Runner
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      features:
+        description: Feature files to run (a file name or a glob pattern)
+        required: true
+        default: 'features/**/*.feature'
+      tags:
+        description: 'Tag expression (see: https://cucumber.io/docs/cucumber/api/#tag-expressions)'
+      args:
+        description: Additional cucumber-js CLI arguments
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12
+      - run: npm ci
+
+      - if: github.event_name != 'workflow_dispatch'
+        name: npm ci
+        run: |
+          npm run lint
+          npm test
+
+      - if: github.event_name == 'workflow_dispatch'
+        run: |
+          ARGS="${{ github.event.inputs.features }}"
+          TAGS="${{ github.event.inputs.tags }}"
+          if [[ ! -z "$TAGS" ]]; then
+            ARGS="$ARGS --tags '$TAGS'"
+          fi
+          npx cucumber-js -r src/index.js $ARGS "${{ github.event.inputs.args }}"
