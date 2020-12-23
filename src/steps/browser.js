@@ -1,7 +1,7 @@
 const expect = require('expect')
 const { When, Then } = require('@cucumber/cucumber')
 
-When('I visit {string}', { timeout: 10000 }, function (url) {
+When('I visit {string}', { timeout: 30000 }, function (url) {
   return this.visit(url)
 })
 
