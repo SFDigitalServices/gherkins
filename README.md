@@ -1,6 +1,9 @@
-# Your repo title here
+# Gherkins!
 
-This is a repo template for SF Digital Services. Here's what it does:
+This repository contains [world] and [step definitions] that fire up a [webdriverio] environment for browser tests written in [Gherkin] and executed by [cucumber-js].
 
-1. The default branch is `main`, not `master`.
-2. The [MIT license](LICENSE) is included by default.
+[world]: https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/world.md#readme
+[step definitions]: https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/step_definitions.md#readme
+[webdriverio]: https://webdriver.io/
+[gherkin]: https://cucumber.io/docs/gherkin/reference/
+[cucumber-js]: https://github.com/cucumber/cucumber-js
