@@ -3,18 +3,13 @@ name: Runner
 on:
   workflow_dispatch:
     inputs:
-      features:
+      feature-files:
         description: Feature files to run (a file name or a glob pattern)
         required: true
         default: 'features/**/*.feature'
-      tags:
-        description: 'Tag expression (see: https://cucumber.io/docs/cucumber/api/#tag-expressions)'
-      args:
+      cucumber-args:
         description: Additional cucumber-js CLI arguments
         default: '--publish'
-      base-url:
-        description: Base URL for tests
-        deafult: 'https://sf.gov'
 
 jobs:
   runner:
@@ -30,16 +25,7 @@ jobs:
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
           args: npm ci
-      - name: 'build $RUN_COMMAND'
-        run: |
-          ARGS="${{ github.event.inputs.features }}"
-          TAGS="${{ github.event.inputs.tags }}"
-          if [[ ! -z "$TAGS" ]]; then
-            ARGS="$ARGS --tags '$TAGS'"
-          fi
-          echo "RUN_COMMAND='npx cucumber-js -r src/index.js $ARGS ${{ github.event.inputs.args }}'" >> $GITHUB_ENV
-          echo "RUN_COMMAND: '$RUN_COMMAND'"
       - name: cucumber-js
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
-          args: ${{ github.env.RUN_COMMAND }}
+          args: "npx cucumber-js -r src/index.js ${{ github.event.inputs.feature-files }} ${{ github.event.inputs.cucumber-args }}"
