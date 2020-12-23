@@ -5,7 +5,10 @@ const defaults = {
   remote: {
     logLevel: 'trace',
     capabilities: {
-      browserName: 'chrome'
+      browserName: 'chrome',
+      'goog:chromeOptions': {
+        args: ['--headless', '--no-sandbox']
+      }
     }
   }
 }
