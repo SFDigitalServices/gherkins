@@ -26,8 +26,10 @@ jobs:
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 12
-      - run: npm ci
+      - name: npm ci
         uses: ianwalter/puppeteer-container@v4.0.0
+        with:
+          args: npm ci
       - name: 'build $RUN_COMMAND'
         run: |
           ARGS="${{ github.event.inputs.features }}"
