@@ -13,11 +13,12 @@
   },
   "devDependencies": {
     "chromedriver": "^87.0.4",
+    "dotenv": "^8.2.0",
     "standard": "^16.0.3",
     "webdriverio": "^6.10.11"
   },
   "scripts": {
-    "test": "cucumber-js -r src/index.js features/**/*.feature",
+    "test": "cucumber-js --publish-quiet -r src/index.js features/**/*.feature",
     "lint": "standard src"
   }
 }
