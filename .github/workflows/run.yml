@@ -6,7 +6,7 @@ on:
       feature-files:
         description: Feature files to run (a file name or a glob pattern)
         required: true
-        default: 'features/**/*.feature'
+        default: 'features/*.feature'
       cucumber-args:
         description: Additional cucumber-js CLI arguments
         default: '--publish'
@@ -14,8 +14,15 @@ on:
 jobs:
   runner:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - edge
+          - safari
     env:
-      BASE_URL: ${{ github.event.inputs.base-url }}
+      SELENIUM_SERVER: hub.browserstack.com
+      SELENIUM_USER: ${{ github.secrets.BSTACK_USERNAME }}
+      SELENIUM_KEY: ${{ github.secrets.BSTACK_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2.1.4
@@ -25,7 +32,9 @@ jobs:
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
           args: npm ci
-      - name: cucumber-js
+      - name: cucumber - ${{ matrix.browser }}
         uses: ianwalter/puppeteer-container@v4.0.0
+        env:
+          BROWSER: ${{ matrix.browser }}
         with:
           args: "npx cucumber-js -r src/index.js ${{ github.event.inputs.feature-files }} ${{ github.event.inputs.cucumber-args }}"
