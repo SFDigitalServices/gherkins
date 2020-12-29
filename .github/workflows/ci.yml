@@ -5,17 +5,33 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - headlessChrome
+          - edge
+          - safari
+
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 12
+
       - name: npm ci
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
           args: npm ci
+
       - run: npm run lint
+
       - name: npm test
         uses: ianwalter/puppeteer-container@v4.0.0
+        env:
+          BROWSER: ${{ matrix.browser }}
+          SELENIUM_SERVER: hub.browserstack.com
+          SELENIUM_USER: ${{ github.secrets.BSTACK_USERNAME }}
+          SELENIUM_KEY: ${{ github.secrets.BSTACK_ACCESS_KEY }}
         with:
           args: npm test
