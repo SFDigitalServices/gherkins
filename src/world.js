@@ -1,15 +1,21 @@
 const { remote } = require('webdriverio')
 const dot = require('dot-component')
+const browsers = require('./browsers')
+
+require('dotenv').config()
+
+const {
+  BROWSER,
+  SELENIUM_USER,
+  SELENIUM_KEY,
+  SELENIUM_SERVER
+} = process.env
 
 const defaults = {
-  remote: {
-    logLevel: 'trace',
-    capabilities: {
-      browserName: 'chrome',
-      'goog:chromeOptions': {
-        args: ['--headless', '--no-sandbox']
-      }
-    }
+  browser: BROWSER || 'headlessChrome',
+  vars: process.env,
+  webdriverOptions: {
+    logLevel: 'trace'
   }
 }
 
@@ -25,25 +31,45 @@ module.exports = class World {
   }
 
   static async closeAll () {
-    console.warn('.... closing %d instances', instances.length)
-    while (instances.length) {
-      await instances.pop().close()
+    if (instances.length) {
+      console.warn('.... closing %d instances', instances.length)
+      while (instances.length) {
+        await instances.pop().close()
+      }
     }
   }
 
-  constructor (options) {
-    console.warn(`~~~~ new World(${JSON.stringify(options)}) ~~~~`)
-    Object.assign(this, defaults, options)
-    this.vars = Object.assign({}, this.vars)
+  constructor ({ parameters }) {
+    this.options = Object.assign({}, defaults, parameters)
+    this.vars = Object.assign({}, this.options.vars)
     instances.push(this)
   }
 
   async open () {
-    console.warn('>>>> open -----')
     if (!this.browser) {
-      console.warn('>>>> open (new remote)')
-      this.browser = await remote(this.remote)
+      this.browser = await this.getBrowser()
     }
+  }
+
+  getBrowser () {
+    const { browser, webdriverOptions } = this.options
+    if (!browser) {
+      throw new Error('The "browser" parameter is required.')
+    } else if (typeof browser === 'string' && !browsers[browser]) {
+      throw new Error(`No such browser shorthand: "${browser}" (possible values: "${Object.keys(browsers).join('", "')}")`)
+    }
+    const capabilities = browsers[browser]
+    const options = Object.assign({
+      server: SELENIUM_SERVER,
+      user: SELENIUM_USER,
+      key: SELENIUM_KEY,
+      capabilities
+    }, webdriverOptions)
+    if (options.logLevel === 'trace' || options.logLevel === 'debug') {
+      console.warn('getBrowser() capabilities:', capabilities)
+      console.warn('getBrowser() options:', options)
+    }
+    return remote(options)
   }
 
   async screenshot (filename) {
