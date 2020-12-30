@@ -1,14 +1,14 @@
-name: Runner
+name: Manual
 
 on:
   workflow_dispatch:
     inputs:
       feature-files:
-        description: Feature files to run (a file name or a glob pattern)
+        description: Feature files to test
         required: true
-        default: 'features/*.feature'
+        default: 'features/**/*.feature'
       cucumber-args:
-        description: Additional cucumber-js CLI arguments
+        description: Additional cucumber-js arguments
         default: '--publish'
 
 jobs:
