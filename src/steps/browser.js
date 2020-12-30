@@ -31,8 +31,14 @@ Then('the element with {word} {string} should be (visible|hidden)', async functi
 
 Then('the element with {word} {string} should have text {string}', async function (qualifier, value, text) {
   const element = await this.elementWith(qualifier, value)
-  const actual = await element.getText()
+  const actual = await element.getText().trim()
   expect(actual).toBe(text)
+})
+
+Then('the element with {word} {string} should contain text {string}', async function (qualifier, value, text) {
+  const element = await this.elementWith(qualifier, value)
+  const actual = await element.getText()
+  expect(actual).toContain(text)
 })
 
 When('I set the value of {string} to {string}', async function (label, value) {
@@ -48,8 +54,8 @@ When('I set the form values:', async function (data) {
   }
 })
 
-When('I click on the {string} {word}', async function (text, selector) {
-  const button = await this.elementWithText(selector, text)
+When('I click on the {string} button', async function (text) {
+  const button = await this.elementWithText('button', text)
   button.waitForClickable()
   return button.click()
 })

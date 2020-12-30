@@ -1,31 +1,46 @@
-name: Runner
+name: Manual
 
 on:
   workflow_dispatch:
     inputs:
       feature-files:
-        description: Feature files to run (a file name or a glob pattern)
+        description: Feature files to test
         required: true
         default: 'features/**/*.feature'
       cucumber-args:
-        description: Additional cucumber-js CLI arguments
+        description: Additional cucumber-js arguments
         default: '--publish'
 
 jobs:
-  runner:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - chrome
+          - edge
+          - safari
+          - ie11
+          - firefox
     env:
-      BASE_URL: ${{ github.event.inputs.base-url }}
+      SELENIUM_SERVER: hub.browserstack.com
+      SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
+      SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
+      BROWSER: ${{ matrix.browser }}
+
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 12
+
       - name: npm ci
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
           args: npm ci
-      - name: cucumber-js
+
+      - name: cucumber - ${{ matrix.browser }}
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
           args: "npx cucumber-js -r src/index.js ${{ github.event.inputs.feature-files }} ${{ github.event.inputs.cucumber-args }}"
