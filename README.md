@@ -1,8 +1,38 @@
-# Gherkins!
-
+# Gherkins
 This repository contains [world] and [step definitions] that fire up a
 [webdriverio] environment for browser tests written in [Gherkin] and executed
 by [cucumber-js].
+
+## Features
+Feature files live in the [features](./features) directory and have the
+`.feature` filename extension. Every file ending in `.feature` will be tested
+unless you change the features option when [running tests manually](#manual-runs).
+
+## Manual runs
+By default, test runs happen only when you push commits to a branch with an
+open pull request. You can run them manually from the
+[Actions tab](https://github.com/SFDigitalServices/gherkins/actions?query=workflow%3AManual):
+
+1. If no actions are listed, click "Manual" under "Workflows" in the left nav.
+
+1. Click the "Run workflow" button in the blue area of the table on the right.
+
+1. Customize the workflow inputs:
+    * The "Feature files to test" input lists one or more feature files to test
+      in this run. This can either be a single filename
+      (`features/my-feature.feature`) or a [glob].
+
+      The default, `features/**/*.feature` matches any file ending in
+      `.feature` in the `features` directory, including any subdirectories. To
+      run only features in a specific subdirectory, you would use
+      `features/subdirectory/*.feature`.
+
+    * The "Additional cucumber-js arguments" input allows you to pass
+      additional arguments to [cucumber-js CLI].
+
+1. After a brief delay, your active test run should be listed in the table on
+   the right.
+
 
 ## Steps
 [Cucumber][cucumber-js] handles matching of our step definitions using
@@ -62,4 +92,6 @@ way to do fuzzy matching yet.
 [step definitions]: https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/step_definitions.md#readme
 [webdriverio]: https://webdriver.io/
 [gherkin]: https://cucumber.io/docs/gherkin/reference/
+[glob]: https://en.wikipedia.org/wiki/Glob_(programming)
 [cucumber-js]: https://github.com/cucumber/cucumber-js
+[cucumber-js CLI]: https://github.com/cucumber/cucumber-js/blob/master/docs/cli.md#cli
