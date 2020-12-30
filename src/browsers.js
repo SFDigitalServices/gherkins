@@ -10,7 +10,15 @@ const {
 } = process.env
 
 module.exports = {
+  chrome: remote('Chrome', 'latest', {
+    os: 'Windows',
+    osVersion: '10'
+  }),
   edge: remote('Edge', 'latest', {
+    os: 'Windows',
+    osVersion: '10'
+  }),
+  firefox: remote('Firefox', 'latest', {
     os: 'Windows',
     osVersion: '10'
   }),
