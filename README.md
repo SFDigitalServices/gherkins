@@ -40,7 +40,46 @@ placeholders in `{}` that match specific patterns. In this guide, the `{}`
 placeholders are named rather than typed, so you'll see `When I visit {url}`
 instead of `When I visit {string}`.
 
-### Qualifiers and shorthands
+### Qualifiers
+Most steps that target specific elements (content, buttons, form inputs, etc.)
+are designed with some flexibility around how the elements are found in the DOM.
+Specifically, this pattern:
+
+```
+... the element with {qualifier} {value}
+```
+
+Allows for clearly written steps that can target elements in a variety of ways:
+
+* `with selector "selector here"` selects an element using any [webdriverio
+  selector](https://webdriver.io/docs/selectors.html), which includes:
+
+  - [CSS selectors]
+  - Text matching:
+    - `with selector "h1=Title"` matches an `h1` element with the exact text "Title"
+    - `with selector "h2*=title"` matches an `h2` element containing the text "title"
+  - And, if you're really hardcore, [XPath].
+
+* `with text "text here"` matches the first element with the exact text content
+* `with text containing "some text"` matches the first element containing the text
+* Any other qualifier generates an attribute selector, for instance:
+
+    - `with id "element-id"` selects `[id="element-id"]` (which is more robust
+      than the `#` ID selector because it can contain spaces and other, less
+      CSS-friendly characters).
+    - `with role "button"` selects `[role="button"]`
+    - `with aria-label "hello, world!"` selects `[aria-label="hello, world!"]`
+
+### Shorthands
+Most steps that target selectors also support _shorthands_ for CSS selectors
+that match most of the relevant elements:
+
+- **button** is shorthand for buttons and button-like elements: `button`,
+  `summary`, `input[type=submit]`, and `[role=button]`.
+- **link** is shorthand for legitimate links with an `href` attribute.
+- **input** is shorthand for `input`, `textarea`, and `select` elements.
+- **dropdown** is really just an alias for `select`, which can read oddly in
+  English ("When I click on the select 'label'").
 
 ### When (actions)
 
@@ -59,7 +98,8 @@ When I set the form values:
   | Age | 100 |
 ```
 
-#### `When I click on the {text} (button|link|input)`
+#### `When I click on the {text} {qualifier}`
+See [qualifiers](#qualifiers) for more info.
 
 ```feature
 When I click on the "Submit" button
@@ -76,17 +116,21 @@ This variation on the above step explicitly waits for the given number of
 seconds before asserting that the browser URL matches the one given.
 
 #### `Then the element with {qualifier} should be (visible|hidden)`
+See [qualifiers](#qualifiers) for more info.
 
 #### `Then the element with {qualifier} should have text {text}`
 This should match elements whose trimmed text content (with leading and
 trailing whitespace removed) exactly equals the provided string. There is no
-way to do fuzzy matching yet.
+way to do fuzzy matching (yet).
+
+See [qualifiers](#qualifiers) for more info.
 
 #### `Then the element with {qualifier} should contain text {text}`
+See [qualifiers](#qualifiers) for more info.
 
 #### `Then I save a screenshot to {path}`
-
-#### `Then I close the browser`
+This is really only useful for local testing, since the screenshots aren't
+saved anywhere (yet).
 
 [world]: https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/world.md#readme
 [step definitions]: https://github.com/cucumber/cucumber-js/blob/master/docs/support_files/step_definitions.md#readme
@@ -95,3 +139,5 @@ way to do fuzzy matching yet.
 [glob]: https://en.wikipedia.org/wiki/Glob_(programming)
 [cucumber-js]: https://github.com/cucumber/cucumber-js
 [cucumber-js CLI]: https://github.com/cucumber/cucumber-js/blob/master/docs/cli.md#cli
+[xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath
+[css selectors]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
