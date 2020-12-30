@@ -17,8 +17,11 @@ jobs:
     strategy:
       matrix:
         browser:
+          - chrome
           - edge
           - safari
+          - ie11
+          - firefox
     env:
       SELENIUM_SERVER: hub.browserstack.com
       SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
