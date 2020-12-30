@@ -6,8 +6,7 @@ const {
   CHROME_ARGS,
   OS,
   OS_VERSION,
-  BROWSER_LOCAL,
-  SELENIUM_VERSION
+  BROWSER_LOCAL
 } = process.env
 
 module.exports = {
@@ -31,10 +30,12 @@ module.exports = {
     os: 'OS X',
     osVersion: 'Catalina'
   }),
-  headlessChrome: {
+  puppeteer: {
     browserName: 'chrome',
     'goog:chromeOptions': {
-      args: CHROME_ARGS ? CHROME_ARGS.split(' ') : ['--headless', '--no-sandbox']
+      args: CHROME_ARGS
+        ? CHROME_ARGS.split(' ')
+        : ['--headless', '--no-sandbox']
     }
   }
 }
@@ -47,8 +48,7 @@ function remote (browserName, version, { os, osVersion, ...options }) {
       debug: true,
       os: OS || os,
       osVersion: OS_VERSION || osVersion,
-      local: BROWSER_LOCAL,
-      seleniumVersion: SELENIUM_VERSION || '3.5.2'
+      local: BROWSER_LOCAL
     }, options)
   }
 }
