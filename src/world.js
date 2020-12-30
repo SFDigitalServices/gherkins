@@ -130,6 +130,8 @@ module.exports = class World {
         return this.shorthand(value)
       case 'text':
         return `=${value}`
+      case 'text containing':
+        return `*=${value}`
       default:
         return `[${qualifier}="${value}"]`
     }
