@@ -30,12 +30,13 @@ jobs:
           args: npm ci
 
       - run: npm run lint
+      - run: npm test
 
       - if: matrix.browser == 'puppeteer'
-        name: npm test
+        name: npm run cucumber
         uses: ianwalter/puppeteer-container@v4.0.0
         with:
-          args: npm test
+          args: npm run cucumber
 
       - if: matrix.browser != 'puppeteer'
-        run: npm test
+        run: npm run cucumber

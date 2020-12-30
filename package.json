@@ -20,7 +20,8 @@
     "webdriverio": "^6.10.11"
   },
   "scripts": {
-    "test": "cucumber-js --publish-quiet -r src/index.js features/**/*.feature",
+    "test": "jest",
+    "cucumber": "cucumber-js --publish-quiet -r src/index.js features/**/*.feature",
     "lint": "standard src"
   }
 }
