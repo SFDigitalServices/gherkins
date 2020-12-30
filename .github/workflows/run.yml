@@ -34,9 +34,9 @@ jobs:
       - name: cucumber - ${{ matrix.browser }}
         uses: ianwalter/puppeteer-container@v4.0.0
         env:
-          BROWSER: ${{ matrix.browser }}
           SELENIUM_SERVER: hub.browserstack.com
-          SELENIUM_USER: ${{ github.secrets.BSTACK_USERNAME }}
-          SELENIUM_KEY: ${{ github.secrets.BSTACK_ACCESS_KEY }}
+          SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
+          SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
+          BROWSER: ${{ matrix.browser }}
         with:
           args: "npx cucumber-js -r src/index.js ${{ github.event.inputs.feature-files }} ${{ github.event.inputs.cucumber-args }}"
