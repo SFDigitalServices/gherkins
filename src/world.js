@@ -47,7 +47,7 @@ module.exports = class World {
       button: 'button, summary, [role=button], input[type=submit]',
       input: 'input, textarea, select',
       dropdown: 'select',
-      link: 'a'
+      link: 'a[href]'
     }, this.options.shorthands)
     instances.push(this)
   }
@@ -130,6 +130,8 @@ module.exports = class World {
         return this.shorthand(value)
       case 'text':
         return `=${value}`
+      case 'text containing':
+        return `*=${value}`
       default:
         return `[${qualifier}="${value}"]`
     }
