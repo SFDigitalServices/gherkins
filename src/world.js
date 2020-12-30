@@ -127,7 +127,7 @@ module.exports = class World {
   selectorFor (qualifier, value) {
     switch (qualifier) {
       case 'selector':
-        return this.shorthands[value] || value
+        return this.shorthand(value)
       case 'text':
         return `=${value}`
       default:
@@ -135,12 +135,16 @@ module.exports = class World {
     }
   }
 
+  shorthand (nameOrSelector) {
+    return this.shorthands[nameOrSelector] || nameOrSelector
+  }
+
   element (selector) {
-    return this.browser.$(this.selectorFor('selector', selector))
+    return this.browser.$(this.shorthand(selector))
   }
 
   elements (selector) {
-    return this.browser.$$(this.selectorFor('selector', selector))
+    return this.browser.$$(this.shorthand(selector))
   }
 
   elementWith (qualifier, value) {
@@ -152,7 +156,9 @@ module.exports = class World {
   }
 
   elementWithText (selector, text) {
-    return this.browser.$$(selector).$(`=${text}`)
+    // select all of the matching elements first,
+    // *then* filter by ones with the given text
+    return this.elements(selector).$(`=${text}`)
   }
 
   async elementWithLabel (label, selector = 'input') {
