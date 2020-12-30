@@ -1,11 +1,6 @@
 {
-  "name": "gherkin-runner",
-  "version": "0.0.0",
-  "description": "",
+  "private": true,
   "main": "src/index.js",
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {
     "@cucumber/cucumber": "^7.0.0",
     "dot-component": "^0.1.1",
