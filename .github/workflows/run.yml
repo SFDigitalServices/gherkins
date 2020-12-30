@@ -19,6 +19,12 @@ jobs:
         browser:
           - edge
           - safari
+    env:
+      SELENIUM_SERVER: hub.browserstack.com
+      SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
+      SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
+      BROWSER: ${{ matrix.browser }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -33,10 +39,5 @@ jobs:
 
       - name: cucumber - ${{ matrix.browser }}
         uses: ianwalter/puppeteer-container@v4.0.0
-        env:
-          SELENIUM_SERVER: hub.browserstack.com
-          SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
-          SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
-          BROWSER: ${{ matrix.browser }}
         with:
           args: "npx cucumber-js -r src/index.js ${{ github.event.inputs.feature-files }} ${{ github.event.inputs.cucumber-args }}"
