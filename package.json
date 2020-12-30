@@ -22,6 +22,6 @@
   "scripts": {
     "test": "jest",
     "cucumber": "cucumber-js --publish-quiet -r src/index.js features/**/*.feature",
-    "lint": "standard src"
+    "lint": "standard src __tests__"
   }
 }

@@ -1,3 +1,4 @@
+/* global jest, expect, describe, it, afterEach */
 const mockEnv = require('mocked-env')
 const World = require('../src/world')
 const { remote } = require('webdriverio')
@@ -46,6 +47,7 @@ describe('World', () => {
       const world = new World()
       expect(world.interpolate('what? $WUT!')).toEqual('what? lol!')
       expect(world.interpolate('$WUT $WUT')).toEqual('lol lol')
+      // eslint-disable-next-line no-template-curly-in-string
       expect(world.interpolate('${WUT}wut')).toEqual('lolwut')
     })
   })
