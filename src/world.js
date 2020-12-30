@@ -12,7 +12,7 @@ const {
 } = process.env
 
 const defaults = {
-  browser: BROWSER || 'headlessChrome',
+  browser: BROWSER || 'puppeteer',
   vars: process.env,
   webdriverOptions: {
     logLevel: 'trace'
@@ -32,16 +32,23 @@ module.exports = class World {
 
   static async closeAll () {
     if (instances.length) {
-      console.warn('.... closing %d instances', instances.length)
+      console.warn('>>> closing %d instances', instances.length)
       while (instances.length) {
         await instances.pop().close()
       }
     }
   }
 
-  constructor ({ parameters }) {
+  constructor (options) {
+    const { parameters } = options || {}
     this.options = Object.assign({}, defaults, parameters)
     this.vars = Object.assign({}, this.options.vars)
+    this.shorthands = Object.assign({
+      button: 'button, summary, [role=button], input[type=submit]',
+      input: 'input, textarea, select',
+      dropdown: 'select',
+      link: 'a'
+    }, this.options.shorthands)
     instances.push(this)
   }
 
@@ -58,7 +65,7 @@ module.exports = class World {
     } else if (typeof browser === 'string' && !browsers[browser]) {
       throw new Error(`No such browser shorthand: "${browser}" (possible values: "${Object.keys(browsers).join('", "')}")`)
     }
-    const capabilities = browsers[browser]
+    const capabilities = browsers[browser] || browser
     const options = Object.assign({
       server: SELENIUM_SERVER,
       user: SELENIUM_USER,
@@ -66,7 +73,6 @@ module.exports = class World {
       capabilities
     }, webdriverOptions)
     if (options.logLevel === 'trace' || options.logLevel === 'debug') {
-      console.warn('getBrowser() capabilities:', capabilities)
       console.warn('getBrowser() options:', options)
     }
     return remote(options)
@@ -77,12 +83,10 @@ module.exports = class World {
   }
 
   async clear () {
-    console.warn('---- clear ----')
     await this.browser.url('about:blank')
   }
 
   async close () {
-    console.warn('---- close >>>>')
     if (this.browser) {
       await this.browser.deleteSession()
       this.browser = undefined
@@ -115,15 +119,15 @@ module.exports = class World {
   }
 
   interpolate (str) {
-    return str.replace(/\$(\w+)/g, (substr, key) => {
-      return this.get(key, substr)
-    })
+    return str
+      .replace(/\$(\w+)/g, (substr, key) => this.get(key, substr))
+      .replace(/\$\{(\w+)\}/g, (substr, key) => this.get(key, substr))
   }
 
   selectorFor (qualifier, value) {
     switch (qualifier) {
       case 'selector':
-        return value
+        return this.shorthands[value] || value
       case 'text':
         return `=${value}`
       default:
@@ -132,11 +136,11 @@ module.exports = class World {
   }
 
   element (selector) {
-    return this.browser.$(selector)
+    return this.browser.$(this.selectorFor('selector', selector))
   }
 
   elements (selector) {
-    return this.browser.$$(selector)
+    return this.browser.$$(this.selectorFor('selector', selector))
   }
 
   elementWith (qualifier, value) {
@@ -148,10 +152,10 @@ module.exports = class World {
   }
 
   elementWithText (selector, text) {
-    return this.browser.$(selector).$(`=${text}`)
+    return this.browser.$$(selector).$(`=${text}`)
   }
 
-  async elementWithLabel (label, selector = 'input, textarea, select') {
+  async elementWithLabel (label, selector = 'input') {
     for (const el of await this.elements(selector)) {
       // skip elements that aren't visible
       if (!el.isDisplayed()) continue

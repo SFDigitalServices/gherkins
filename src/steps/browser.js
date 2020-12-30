@@ -54,8 +54,8 @@ When('I set the form values:', async function (data) {
   }
 })
 
-When('I click on the {string} {word}', async function (text, selector) {
-  const button = await this.elementWithText(selector, text)
+When('I click on the {string} button', async function (text, selector) {
+  const button = await this.elementWithText('button, [role=button], input[type=submit]', text)
   button.waitForClickable()
   return button.click()
 })
