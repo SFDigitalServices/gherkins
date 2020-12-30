@@ -8,9 +8,14 @@ jobs:
     strategy:
       matrix:
         browser:
-          - headlessChrome
+          - puppeteer
           - edge
           - safari
+    env:
+      SELENIUM_SERVER: hub.browserstack.com
+      SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
+      SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
+      BROWSER: ${{ matrix.browser }}
 
     steps:
       - uses: actions/checkout@v2
@@ -26,12 +31,11 @@ jobs:
 
       - run: npm run lint
 
-      - name: npm test
+      - if: matrix.browser == 'puppeteer'
+        name: npm test
         uses: ianwalter/puppeteer-container@v4.0.0
-        env:
-          SELENIUM_SERVER: hub.browserstack.com
-          SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
-          SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
-          BROWSER: ${{ matrix.browser }}
         with:
           args: npm test
+
+      - if: matrix.browser != 'puppeteer'
+        run: npm test
