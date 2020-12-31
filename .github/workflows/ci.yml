@@ -8,15 +8,10 @@ jobs:
     strategy:
       matrix:
         browser:
+          - false
           - chrome
           - edge
           - safari
-    env:
-      SELENIUM_SERVER: hub.browserstack.com
-      SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
-      SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
-      BROWSER: ${{ matrix.browser }}
-
     steps:
       - uses: actions/checkout@v2
 
@@ -25,7 +20,17 @@ jobs:
           node-version: 12
 
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - name: npm run features
+
+      - if: matrix.browser == false
+        run: npm run lint
+      - if: matrix.browser == false
+        run: npm test
+
+      - if: matrix.browser
+        name: npm run features
+        env:
+          SELENIUM_SERVER: hub.browserstack.com
+          SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
+          SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
+          BROWSER: ${{ matrix.browser }}
         run: npm run features -- --publish
