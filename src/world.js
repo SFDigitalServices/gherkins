@@ -2,8 +2,6 @@ const { remote } = require('webdriverio')
 const dot = require('dot-component')
 const browsers = require('./browsers')
 
-require('dotenv').config()
-
 const {
   BROWSER,
   SELENIUM_USER,

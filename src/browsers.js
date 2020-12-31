@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const {
   BROWSER_NAME,
   BROWSER_VERSION,

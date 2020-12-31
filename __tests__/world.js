@@ -1,14 +1,10 @@
 /* global jest, expect, describe, it, beforeAll, beforeEach, afterEach */
 const mockEnv = require('mocked-env')
 const World = require('../src/world')
-const dotenv = require('dotenv')
 const { remote } = require('webdriverio')
 
 jest.mock('webdriverio')
 remote.mockImplementation(() => mockRemote)
-
-jest.mock('dotenv')
-dotenv.config.mockImplementation(() => null)
 
 const mockRemote = mockObject({
   $: () => mockElement,
