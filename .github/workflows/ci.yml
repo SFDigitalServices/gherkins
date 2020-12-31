@@ -3,7 +3,18 @@ name: CI
 on: [pull_request]
 
 jobs:
-  test:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  features:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -11,21 +22,16 @@ jobs:
           - chrome
           - edge
           - safari
-    env:
-      SELENIUM_SERVER: hub.browserstack.com
-      SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
-      SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
-      BROWSER: ${{ matrix.browser }}
-
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 12
-
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
       - name: npm run features
+        env:
+          SELENIUM_SERVER: hub.browserstack.com
+          SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
+          SELENIUM_KEY: ${{ secrets.BSTACK_ACCESS_KEY }}
+          BROWSER: ${{ matrix.browser }}
         run: npm run features -- --publish

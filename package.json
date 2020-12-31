@@ -19,5 +19,8 @@
     "features": "npm run cucumber -- features/**/*.feature",
     "cucumber": "cucumber-js --publish-quiet --require src/index.js",
     "lint": "standard src __tests__"
+  },
+  "jest": {
+    "collectCoverage": true
   }
 }
