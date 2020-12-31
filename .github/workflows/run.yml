@@ -35,12 +35,10 @@ jobs:
         with:
           node-version: 12
 
-      - name: npm ci
-        uses: ianwalter/puppeteer-container@v4.0.0
-        with:
-          args: npm ci
+      - run: npm ci
 
-      - name: cucumber - ${{ matrix.browser }}
-        uses: ianwalter/puppeteer-container@v4.0.0
-        with:
-          args: "npx cucumber-js -r src/index.js ${{ github.event.inputs.feature-files }} ${{ github.event.inputs.cucumber-args }}"
+      - name: cucumber
+        run: |
+          npm run cucumber -- \
+            ${{ github.event.inputs.feature-files }} \
+            ${{ github.event.inputs.cucumber-args }}
