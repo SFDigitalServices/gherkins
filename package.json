@@ -16,7 +16,8 @@
   },
   "scripts": {
     "test": "jest",
-    "cucumber": "cucumber-js --publish-quiet -r src/index.js features/**/*.feature",
+    "features": "npm run cucumber -- features/**/*.feature",
+    "cucumber": "cucumber-js --publish-quiet --require src/index.js",
     "lint": "standard src __tests__"
   }
 }
