@@ -32,7 +32,6 @@ module.exports = class World {
 
   static async closeAll () {
     if (instances.length) {
-      console.warn('>>> closing %d instances', instances.length)
       while (instances.length) {
         await instances.pop().close()
       }
@@ -72,9 +71,6 @@ module.exports = class World {
       key: SELENIUM_KEY,
       capabilities
     }, webdriverOptions)
-    if (options.logLevel === 'trace' || options.logLevel === 'debug') {
-      console.warn('getBrowser() options:', options)
-    }
     return remote(options)
   }
 
