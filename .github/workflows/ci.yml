@@ -3,31 +3,31 @@ name: CI
 on: [pull_request]
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+  features:
     strategy:
       matrix:
         browser:
-          - false
           - chrome
           - edge
           - safari
     steps:
       - uses: actions/checkout@v2
-
       - uses: actions/setup-node@v2.1.4
         with:
           node-version: 12
-
       - run: npm ci
-
-      - if: matrix.browser == false
-        run: npm run lint
-      - if: matrix.browser == false
-        run: npm test
-
-      - if: matrix.browser
-        name: npm run features
+      - name: npm run features
         env:
           SELENIUM_SERVER: hub.browserstack.com
           SELENIUM_USER: ${{ secrets.BSTACK_USERNAME }}
