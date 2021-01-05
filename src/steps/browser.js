@@ -45,7 +45,18 @@ Then('the URL should match {string}', async function (string) {
 
 Then('the URL should be {string} after {float} second(s)', async function (url, seconds) {
   await sleep(seconds / 1000)
-  expect(await this.browser.getUrl()).toBe(url)
+  expect(await this.getUrl()).toBe(url)
+})
+
+Then('I should see an element with {word} {string}', async function (qualifier, value) {
+  const element = await this.elementWith(qualifier, value)
+  expect(element.isDisplayed()).toBe(true)
+})
+
+Then('I should see a link to {string}', async function (href) {
+  const link = await this.element(`a[href="${href}"]`)
+  expect(link).not.toBe(undefined)
+  expect(await link.isDisplayed()).toBe(true)
 })
 
 Then('the element with {word} {string} should be (visible|hidden)', async function (qualifier, value, state) {
