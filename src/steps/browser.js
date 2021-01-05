@@ -31,18 +31,16 @@ When('I type {string}', function (string) {
 })
 
 Then('the URL should be {string}', async function (url) {
-  const actual = await this.browser.getUrl()
-  expect(actual).toBe(this.interpolate(url))
+  expect(await this.getUrl()).toBe(this.interpolate(url))
 })
 
 Then('the URL should contain {string}', async function (substr) {
-  const actual = await this.browser.getUrl()
-  expect(actual).toEqual(expect.stringContaining(substr))
+  expect(await this.getUrl()).toEqual(expect.stringContaining(substr))
 })
 
 Then('the URL should match {string}', async function (string) {
   const pattern = regexpFromString(string)
-  expect(this.browser.url).toEqual(expect.stringMatching(pattern))
+  expect(await this.getUrl()).toEqual(expect.stringMatching(pattern))
 })
 
 Then('the URL should be {string} after {float} second(s)', async function (url, seconds) {

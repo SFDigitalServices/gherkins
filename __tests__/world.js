@@ -10,6 +10,7 @@ const mockRemote = mockObject({
   $: () => mockElement,
   $$: () => [mockElement],
   url: undefined,
+  getUrl: () => undefined,
   saveScreenshot: undefined,
   deleteSession: undefined
 })
@@ -395,6 +396,23 @@ describe('World', () => {
       await world.clear()
       expect(remote).toHaveBeenCalledTimes(1)
       expect(mockRemote.url).toHaveBeenCalledWith('about:blank')
+    })
+  })
+
+  describe('getUrl()', () => {
+    it('throws without a browser', async () => {
+      const world = new World()
+      expect(() => world.getUrl()).toThrow(/get URL/)
+      expect(remote).toHaveBeenCalledTimes(0)
+    })
+
+    it('gets the URL', async () => {
+      mockRemote.getUrl.mockImplementationOnce(() => 'about:blink')
+      const world = new World()
+      await world.open()
+      const url = await world.getUrl()
+      expect(url).toBe('about:blink')
+      expect(mockRemote.getUrl).toHaveBeenCalledTimes(1)
     })
   })
 

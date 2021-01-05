@@ -87,9 +87,14 @@ module.exports = class World {
     await this.browser.url('about:blank')
   }
 
+  getUrl () {
+    this.assertBrowser('get URL')
+    return this.browser.getUrl()
+  }
+
   async visit (url) {
     await this.open()
-    await this.browser.url(url)
+    return this.browser.url(url)
   }
 
   selectorFor (qualifier, value) {
