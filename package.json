@@ -4,7 +4,8 @@
   "dependencies": {
     "@cucumber/cucumber": "^7.0.0",
     "dot-component": "^0.1.1",
-    "expect": "^26.6.2"
+    "expect": "^26.6.2",
+    "regexp-from-string": "^0.1.0"
   },
   "devDependencies": {
     "chromedriver": "^87.0.4",
