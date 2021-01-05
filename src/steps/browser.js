@@ -1,4 +1,5 @@
 const expect = require('expect')
+const regexpFromString = require('regexp-from-string')
 const { When, Then } = require('@cucumber/cucumber')
 
 When('I visit {string}', { timeout: 30000 }, function (url) {
@@ -16,7 +17,18 @@ When('I resize the window to {int}x{int}', async function (width, height) {
 })
 
 Then('the URL should be {string}', async function (url) {
-  expect(this.browser.url).toBe(this.interpolate(url))
+  const actual = await this.browser.getUrl()
+  expect(actual).toBe(this.interpolate(url))
+})
+
+Then('the URL should contain {string}', async function (substr) {
+  const actual = await this.browser.getUrl()
+  expect(actual).toEqual(expect.stringContaining(substr))
+})
+
+Then('the URL should match {string}', async function (string) {
+  const pattern = regexpFromString(string)
+  expect(this.browser.url).toEqual(expect.stringMatching(pattern))
 })
 
 Then('the URL should be {string} after {float} seconds', async function (url, seconds) {
