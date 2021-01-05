@@ -45,7 +45,7 @@ Then('the URL should match {string}', async function (string) {
   expect(this.browser.url).toEqual(expect.stringMatching(pattern))
 })
 
-Then('the URL should be {string} after {float} seconds', async function (url, seconds) {
+Then('the URL should be {string} after {float} second(s)', async function (url, seconds) {
   await sleep(seconds / 1000)
   expect(await this.browser.getUrl()).toBe(url)
 })
