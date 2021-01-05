@@ -290,12 +290,21 @@ describe('World', () => {
     describe('element()', () => {
       it('throws without a browser', async () => {
         await expect(() => world.element('h1'))
+          .rejects
           .toThrow('Unable to select "h1" element (no browser)')
+      })
+
+      it('throws if no element is found', async () => {
+        mockRemote.$.mockImplementationOnce(() => null)
+        await world.open()
+        await expect(() => world.element('h1'))
+          .rejects
+          .toThrow('No element found with selector "h1"')
       })
 
       it('calls browser.$()', async () => {
         await world.visit('https://example.com')
-        const el = world.element('h1')
+        const el = await world.element('h1')
         expect(el).toBe(mockElement)
         expect(mockRemote.$).toHaveBeenCalledTimes(1)
         expect(mockRemote.$).toHaveBeenCalledWith('h1')
@@ -305,7 +314,16 @@ describe('World', () => {
     describe('elements()', () => {
       it('throws without a browser', async () => {
         await expect(() => world.elements('div'))
+          .rejects
           .toThrow('Unable to select "div" elements (no browser)')
+      })
+
+      it('throws if no elements are found', async () => {
+        mockRemote.$$.mockImplementationOnce(() => [])
+        await world.open()
+        await expect(() => world.elements('h1'))
+          .rejects
+          .toThrow('No elements found with selector "h1"')
       })
 
       it('calls browser.$$()', async () => {
@@ -319,6 +337,7 @@ describe('World', () => {
     describe('elementWith()', () => {
       it('throws without a browser', async () => {
         await expect(() => world.elementWith('id', 'foo'))
+          .rejects
           .toThrow('Unable to select element with id "foo" (no browser)')
       })
 
@@ -350,6 +369,7 @@ describe('World', () => {
     describe('elementsWith()', () => {
       it('throws without a browser', async () => {
         await expect(() => world.elementsWith('title', 'yo'))
+          .rejects
           .toThrow('Unable to select elements with title "yo" (no browser)')
       })
 
@@ -382,7 +402,8 @@ describe('World', () => {
       it('throws if no element is found', async () => {
         await world.visit('https://example.com')
         await expect(() => world.elementWithLabel('label'))
-          .rejects.toThrow('No element found with computed label: "label" and selector: "input"')
+          .rejects
+          .toThrow('No element found with computed label: "label" and selector: "input"')
       })
 
       it('works', async () => {
@@ -474,6 +495,132 @@ describe('World', () => {
       expect(mockRemote.saveScreenshot).toHaveBeenCalledWith('foo.png')
     })
   })
+
+  describe('assertElements()', () => {
+    it('throws if it gets a non-array', async () => {
+      const world = new World()
+      await world.open()
+      mockRemote.$$.mockImplementationOnce(() => null)
+      expect(() => world.elements('h1'))
+        .rejects
+        .toThrow('Expected an array of elements with selector "h1" but got null')
+    })
+  })
+
+  describe('assertDisplayed()', () => {
+    const world = new World()
+    beforeAll(() => world.open())
+
+    it('resolves if the element is visible', async () => {
+      const element = mockObject({ isDisplayed: deferred(true) })
+      await expect(() => world.assertDisplayed(element)).resolves
+    })
+
+    it('resolves if the element is hidden and the second argument is false', async () => {
+      const element = mockObject({ isDisplayed: deferred(false) })
+      await expect(() => world.assertDisplayed(element, false)).resolves
+    })
+
+    it('throws if passed a falsy value', () => {
+      return expect(() => world.assertDisplayed(null))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+    })
+
+    it('throws if the single element is not displayed', () => {
+      const element = mockObject({ isDisplayed: false })
+      return expect(() => world.assertDisplayed(element))
+        .rejects
+        .toThrow('Element is not visible')
+    })
+
+    it('throws if passed a falsy value', async () => {
+      await expect(() => world.assertDisplayed(null))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+      await expect(() => world.assertDisplayed(false))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+      await expect(() => world.assertDisplayed(0))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+    })
+
+    it('throws if passed a scalar', async () => {
+      await expect(() => world.assertDisplayed(0))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+      await expect(() => world.assertDisplayed(1))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+      await expect(() => world.assertDisplayed('lol'))
+        .rejects
+        .toThrow('Expected one or more visible elements')
+    })
+
+    describe('multiple elements', () => {
+      it('resolves when all elements are visible', async () => {
+        const elements = [
+          mockObject({ isDisplayed: deferred(true, 10) }),
+          mockObject({ isDisplayed: deferred(true, 10) }),
+          mockObject({ isDisplayed: deferred(true, 10) })
+        ]
+        await expect(() => world.assertDisplayed(elements)).resolves
+      })
+
+      it('resolves when the minimum displayed count is met', async () => {
+        const elements = [
+          mockObject({ isDisplayed: deferred(true, 10) }),
+          mockObject({ isDisplayed: deferred(true, 10) }),
+          mockObject({ isDisplayed: deferred(false, 10) })
+        ]
+        await expect(() => world.assertDisplayed(elements, 2)).resolves
+      })
+
+      it('throws if it gets an empty array', () => {
+        return expect(() => world.assertDisplayed([]))
+          .rejects
+          .toThrow('Expected a non-empty element array')
+      })
+
+      it('throws if none are displayed', async () => {
+        const elements = [
+          mockObject({ isDisplayed: deferred(false) }),
+          mockObject({ isDisplayed: deferred(false) })
+        ]
+        await expect(() => world.assertDisplayed(elements))
+          .rejects
+          .toThrow('None of the 2 elements are visible')
+      })
+
+      it('throws if the number visible is less than the minimum', async () => {
+        const elements = [
+          mockObject({ isDisplayed: deferred(false) }),
+          mockObject({ isDisplayed: deferred(false) }),
+          mockObject({ isDisplayed: deferred(true) })
+        ]
+        await expect(() => world.assertDisplayed(elements, 2))
+          .rejects
+          .toThrow('Expected at least 2 visible elements out of 3, but got 1')
+
+        elements.pop()
+        await expect(() => world.assertDisplayed(elements, 1))
+          .rejects
+          .toThrow('Expected at least 1 visible element out of 2, but got 0')
+      })
+
+      it('throws with displayed = true if any is visible', async () => {
+        const elements = [
+          mockObject({ isDisplayed: deferred(false) }),
+          mockObject({ isDisplayed: deferred(false) }),
+          mockObject({ isDisplayed: deferred(true) })
+        ]
+        await expect(() => world.assertDisplayed(elements, false))
+          .rejects
+          .toThrow('Expected 0 visible elements out of 3, but got 1')
+      })
+    })
+  })
 })
 
 function mockFn (name, returns) {
@@ -499,4 +646,14 @@ function mockObject (methods) {
     mock[method] = mockFn(method, methods[method])
   }
   return mock
+}
+
+function deferred (value, delay = 10) {
+  return () => sleep(delay).then(() => value)
+}
+
+function sleep (ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
 }

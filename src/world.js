@@ -1,5 +1,5 @@
-const { remote } = require('webdriverio')
 const dot = require('dot-component')
+const { remote } = require('webdriverio')
 const browsers = require('./browsers')
 
 const { BROWSER = 'puppeteer' } = process.env
@@ -33,6 +33,7 @@ module.exports = class World {
       button: 'button, summary, [role=button], input[type=submit]',
       input: 'input, textarea, select',
       dropdown: 'select',
+      heading: 'h1, h2, h3, h4, h5, h6',
       link: 'a[href]'
     }, this.options.shorthands)
 
@@ -115,24 +116,32 @@ module.exports = class World {
     return this.shorthands[nameOrSelector] || nameOrSelector
   }
 
-  element (selector) {
-    this.assertBrowser(`select "${selector}" element`)
-    return this.browser.$(this.shorthand(selector))
+  async element (selectorOrShorthand) {
+    this.assertBrowser(`select "${selectorOrShorthand}" element`)
+    const selector = this.shorthand(selectorOrShorthand)
+    const el = this.browser.$(selector)
+    return this.assertElement(el, `with selector "${selector}"`)
   }
 
-  elements (selector) {
-    this.assertBrowser(`select "${selector}" elements`)
-    return this.browser.$$(this.shorthand(selector))
+  async elements (selectorOrShorthand) {
+    this.assertBrowser(`select "${selectorOrShorthand}" elements`)
+    const selector = this.shorthand(selectorOrShorthand)
+    const elements = await this.browser.$$(selector)
+    return this.assertElements(elements, `with selector "${selector}"`)
   }
 
-  elementWith (qualifier, value) {
+  async elementWith (qualifier, value) {
     this.assertBrowser(`select element with ${qualifier} "${value}"`)
-    return this.browser.$(this.selectorFor(qualifier, value))
+    const selector = this.selectorFor(qualifier, value)
+    const el = await this.browser.$(selector)
+    return this.assertElement(el, `with ${qualifier} "${value}" (${selector})`)
   }
 
-  elementsWith (qualifier, value) {
+  async elementsWith (qualifier, value) {
     this.assertBrowser(`select elements with ${qualifier} "${value}"`)
-    return this.browser.$$(this.selectorFor(qualifier, value))
+    const selector = this.selectorFor(qualifier, value)
+    const elements = await this.browser.$$(selector)
+    return this.assertElements(elements, `with ${qualifier} "${value}" (${selector})`)
   }
 
   async elementWithLabel (label, selector = 'input') {
@@ -156,6 +165,58 @@ module.exports = class World {
   assertBrowser (action) {
     if (!this.browser) {
       throw new Error(`Unable to ${action} (no browser)`)
+    }
+  }
+
+  assertElement (element, reason) {
+    if (!element) {
+      throw new Error(`No element found ${reason}`)
+    }
+    return element
+  }
+
+  assertElements (elements, reason) {
+    if (!elements) {
+      throw new Error(`Expected an array of elements ${reason} but got ${elements}`)
+    } else if (!elements.length) {
+      throw new Error(`No elements found ${reason}`)
+    }
+    return elements
+  }
+
+  async assertDisplayed (elementOrElements, displayed = true) {
+    if (Array.isArray(elementOrElements)) {
+      const { length } = elementOrElements
+      if (length === 0) {
+        throw new Error('Expected a non-empty element array')
+      }
+
+      let count = 0
+      for (const el of elementOrElements) {
+        if (await el.isDisplayed()) {
+          count++
+        }
+      }
+      if (typeof displayed === 'number') {
+        if (count <= displayed) {
+          throw new Error(`Expected at least ${displayed} visible ${pluralize('element', displayed)} out of ${length}, but got ${count}`)
+        }
+      } else if (displayed) {
+        if (count === 0) {
+          throw new Error(`None of the ${length} ${pluralize('element', length)} are visible`)
+        }
+      } else {
+        if (count > 0) {
+          throw new Error(`Expected 0 visible elements out of ${length}, but got ${count}`)
+        }
+      }
+    } else if (elementOrElements && typeof elementOrElements === 'object') {
+      const visible = await elementOrElements.isDisplayed()
+      if (visible !== displayed) {
+        throw new Error(`Element is not ${displayed ? 'visible' : 'hidden'}`)
+      }
+    } else {
+      throw new Error(`Expected one or more ${displayed ? 'visible' : 'hidden'} elements, but got ${typeof elementOrElements}`)
     }
   }
 }
@@ -185,4 +246,8 @@ class Variables {
     dot.set(this.vars, key, value, true)
     return old
   }
+}
+
+function pluralize (str, num, plural = `${str}s`) {
+  return num === 1 ? str : plural
 }
