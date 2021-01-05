@@ -71,12 +71,14 @@ module.exports = class World {
       throw new Error(`No such browser shorthand: "${browser}" (possible values: "${Object.keys(browsers).join('", "')}")`)
     }
     const capabilities = browsers[browser] || browser
-    const options = Object.assign({
-      server: SELENIUM_SERVER,
-      user: SELENIUM_USER,
-      key: SELENIUM_KEY,
-      capabilities
-    }, webdriverOptions)
+    const options = Object.assign({ capabilities }, webdriverOptions)
+    if (SELENIUM_SERVER && !capabilities.local) {
+      Object.assign(options, {
+        server: SELENIUM_SERVER,
+        user: SELENIUM_USER,
+        key: SELENIUM_KEY
+      })
+    }
     return remote(options)
   }
 

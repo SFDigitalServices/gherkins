@@ -37,6 +37,7 @@ module.exports = {
     osVersion: 'Catalina'
   }),
   puppeteer: {
+    local: true,
     browserName: 'chrome',
     'goog:chromeOptions': {
       args: CHROME_ARGS
