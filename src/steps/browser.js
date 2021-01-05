@@ -30,53 +30,7 @@ When('I type {string}', function (string) {
   return this.browser.keys(string.split(''))
 })
 
-Then('the URL should be {string}', async function (url) {
-  expect(await this.getUrl()).toBe(this.interpolate(url))
-})
-
-Then('the URL should contain {string}', async function (substr) {
-  expect(await this.getUrl()).toEqual(expect.stringContaining(substr))
-})
-
-Then('the URL should match {string}', async function (string) {
-  const pattern = regexpFromString(string)
-  expect(await this.getUrl()).toEqual(expect.stringMatching(pattern))
-})
-
-Then('the URL should be {string} after {float} second(s)', async function (url, seconds) {
-  await sleep(seconds / 1000)
-  expect(await this.getUrl()).toBe(url)
-})
-
-Then('I should see an element with {word} {string}', async function (qualifier, value) {
-  const element = await this.elementWith(qualifier, value)
-  expect(element.isDisplayed()).toBe(true)
-})
-
-Then('I should see a link to {string}', async function (href) {
-  const link = await this.element(`a[href="${href}"]`)
-  expect(link).not.toBe(undefined)
-  expect(await link.isDisplayed()).toBe(true)
-})
-
-Then('the element with {word} {string} should be (visible|hidden)', async function (qualifier, value, state) {
-  const element = await this.elementWith(qualifier, value)
-  expect(element.isDisplayed()).toBe(state === 'visible')
-})
-
-Then('the element with {word} {string} should have text {string}', async function (qualifier, value, text) {
-  const element = await this.elementWith(qualifier, value)
-  const actual = await element.getText().trim()
-  expect(actual).toBe(text)
-})
-
-Then('the element with {word} {string} should contain text {string}', async function (qualifier, value, text) {
-  const element = await this.elementWith(qualifier, value)
-  const actual = await element.getText()
-  expect(actual).toContain(text)
-})
-
-When('I set the value of {string} to {string}', async function (label, value) {
+When('I set the {string} field to {string}', async function (label, value) {
   const element = await this.elementWithLabel(label)
   return element.setValue(value)
 })
@@ -95,12 +49,64 @@ When('I click on the {string} button', async function (text) {
   return button.click()
 })
 
-Then('I save a screenshot to {string}', function (path) {
-  return this.screenshot(path)
-})
-
 When('I wait for {float} second(s)', async function (seconds) {
   return sleep(seconds / 1000)
+})
+
+Then('the URL should be {string}', async function (url) {
+  expect(await this.getUrl()).toBe(this.interpolate(url))
+})
+
+Then('the URL should contain {string}', async function (substr) {
+  expect(await this.getUrl()).toEqual(expect.stringContaining(substr))
+})
+
+Then('the URL should match {string}', async function (string) {
+  const pattern = regexpFromString(string)
+  expect(await this.getUrl()).toEqual(expect.stringMatching(pattern))
+})
+
+Then('the URL should be {string} after {float} second(s)', async function (url, seconds) {
+  await sleep(seconds / 1000)
+  expect(await this.getUrl()).toBe(url)
+})
+
+Then('a link to {string} should be visible', async function (href) {
+  const link = await this.element(`a[href="${href}"]`)
+  return this.assertDisplayed(link)
+})
+
+Then('an element with {word} {string} should be visible', async function (qualifier, value) {
+  const element = await this.elementWith(qualifier, value)
+  return this.assertDisplayed(element)
+})
+
+Then('a {word} with text {string} should be visible', async function (selector, text) {
+  const elements = await this.elements(selector)
+  for (const el of elements) {
+    const actual = await el.getText() || ''
+    if (actual.trim() === text) {
+      return this.assertDisplayed(el)
+    }
+  }
+  throw new Error(`No ${selector} elements found with text: "${text}" (out of ${elements.length})`)
+})
+
+Then('an element with {word} {string} should have text {string}', async function (qualifier, value, text) {
+  const element = await this.elementWith(qualifier, value)
+  const actual = await element.getText()
+  expect(actual).toBeInstanceOf(String)
+  expect(actual.trim()).toBe(text)
+})
+
+Then('an element with {word} {string} should contain text {string}', async function (qualifier, value, text) {
+  const element = await this.elementWith(qualifier, value)
+  const actual = await element.getText()
+  expect(actual).toContain(text)
+})
+
+Then('I save a screenshot to {string}', function (path) {
+  return this.screenshot(path)
 })
 
 Then('I close the browser', function () {

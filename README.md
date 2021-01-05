@@ -43,13 +43,13 @@ instead of `When I visit {string}`.
 ### Qualifiers
 Most steps that target specific elements (content, buttons, form inputs, etc.)
 are designed with some flexibility around how the elements are found in the DOM.
-Specifically, this pattern:
+In this document, the pattern:
 
 ```
-... the element with {qualifier} {value}
+... the element with {qualifier}
 ```
 
-Allows for clearly written steps that can target elements in a variety of ways:
+allows for clearly written steps that can target elements in a variety of ways:
 
 * `with selector "selector here"` selects an element using any [webdriverio
   selector](https://webdriver.io/docs/selectors.html), which includes:
@@ -61,7 +61,6 @@ Allows for clearly written steps that can target elements in a variety of ways:
   - And, if you're really hardcore, [XPath].
 
 * `with text "text here"` matches the first element with the exact text content
-* `with text containing "some text"` matches the first element containing the text
 * Any other qualifier generates an attribute selector, for instance:
 
     - `with id "element-id"` selects `[id="element-id"]` (which is more robust
@@ -153,6 +152,10 @@ seconds before asserting that the browser URL matches the one given.
 
 #### `Then the element with {qualifier} should be (visible|hidden)`
 See [qualifiers](#qualifiers) for more info.
+
+#### `Then a(n) {selector} with {qualifier} should be (visible}|hidden)`
+This is more specific than the `Then the element with...` variant above in that
+it filters
 
 #### `Then the element with {qualifier} should have text {text}`
 This should match elements whose trimmed text content (with leading and
