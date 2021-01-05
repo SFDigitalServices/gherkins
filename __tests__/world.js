@@ -1,5 +1,5 @@
 /* global jest, expect, describe, it, beforeAll, beforeEach, afterEach */
-const mockEnv = require('mocked-env')
+const mockedEnv = require('mocked-env')
 const World = require('../src/world')
 const { remote } = require('webdriverio')
 
@@ -32,6 +32,8 @@ const mockElements = mockObject({
 })
 
 let restoreEnv = () => null
+const mockEnv = env => (restoreEnv = mockedEnv(env))
+
 afterEach(async () => {
   restoreEnv()
   await World.closeAll()
@@ -72,7 +74,7 @@ describe('World', () => {
       })
 
       it('accepts an object for the "browser" parameter', async () => {
-        restoreEnv = mockEnv({
+        mockEnv({
           SELENIUM_SERVER: undefined,
           SELENIUM_USER: undefined,
           SELENIUM_KEY: undefined
@@ -134,7 +136,7 @@ describe('World', () => {
 
   describe('variables', () => {
     it('inherits from process.env by default', () => {
-      restoreEnv = mockEnv({ DERP: 'herp' })
+      mockEnv({ DERP: 'herp' })
       const world = new World()
       expect(world.get('DERP')).toBe('herp')
     })
@@ -151,21 +153,21 @@ describe('World', () => {
     })
 
     it('can determine if a variable is set', () => {
-      restoreEnv = mockEnv({ DERP: 'herp' })
+      mockEnv({ DERP: 'herp' })
       const world = new World()
       expect(world.has('DERP')).toBe(true)
       expect(world.has('NERP')).toBe(false)
     })
 
     it('can set a variable', () => {
-      restoreEnv = mockEnv({ DERP: 'herp' })
+      mockEnv({ DERP: 'herp' })
       const world = new World()
       world.set('DERP', 'nope')
       expect(world.get('DERP')).toBe('nope')
     })
 
     it('can interpolate vars', () => {
-      restoreEnv = mockEnv({ WUT: 'lol' })
+      mockEnv({ WUT: 'lol' })
       const world = new World()
       expect(world.interpolate('what? $WUT!')).toEqual('what? lol!')
       expect(world.interpolate('$WUT $WUT')).toEqual('lol lol')
