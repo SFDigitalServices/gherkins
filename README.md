@@ -107,6 +107,11 @@ When I click on the "Apply now" link
 When I click on the "My name" input
 ```
 
+#### `When I wait for {number} second(|s)`
+Pauses for the number of seconds (an integer or floating point number, e.g. `1.5`),
+which must not exceed the default timeout (10 seconds unless
+`CUCUMBER_DEFAULT_TIMEOUT` is set to something else).
+
 ### Then (assertions)
 
 #### `Then the URL should be {url}`

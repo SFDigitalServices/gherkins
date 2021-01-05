@@ -64,6 +64,10 @@ Then('I save a screenshot to {string}', function (path) {
   return this.screenshot(path)
 })
 
+When('I wait for {float} second(|s)', async function (seconds) {
+  return sleep(seconds / 1000)
+})
+
 Then('I close the browser', function () {
   return this.close()
 })
