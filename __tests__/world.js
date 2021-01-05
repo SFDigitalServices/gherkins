@@ -149,6 +149,20 @@ describe('World', () => {
       expect(world.get('herp')).toBe('derp')
     })
 
+    it('can determine if a variable is set', () => {
+      restoreEnv = mockEnv({ DERP: 'herp' })
+      const world = new World()
+      expect(world.has('DERP')).toBe(true)
+      expect(world.has('NERP')).toBe(false)
+    })
+
+    it('can set a variable', () => {
+      restoreEnv = mockEnv({ DERP: 'herp' })
+      const world = new World()
+      world.set('DERP', 'nope')
+      expect(world.get('DERP')).toBe('nope')
+    })
+
     it('can interpolate vars', () => {
       restoreEnv = mockEnv({ WUT: 'lol' })
       const world = new World()

@@ -43,7 +43,7 @@ module.exports = class World {
 
     // delegate (proxy) calls for variable operations to the Variables class
     this.vars = new Variables(this.options.vars)
-    for (const method of ['get', 'set', 'unset', 'interpolate']) {
+    for (const method of ['get', 'has', 'set', 'unset', 'interpolate']) {
       this[method] = (...args) => this.vars[method](...args)
     }
 
@@ -163,8 +163,18 @@ class Variables {
       .replace(/\$\{(\w+)\}/g, (substr, key) => this.get(key, substr))
   }
 
+  has (key) {
+    return dot.get(this.vars, key) !== undefined
+  }
+
   get (key, fallback) {
     const value = dot.get(this.vars, key)
     return value === undefined ? fallback : value
+  }
+
+  set (key, value) {
+    const old = this.get(key)
+    dot.set(this.vars, key, value, true)
+    return old
   }
 }
