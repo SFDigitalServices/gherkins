@@ -2,6 +2,7 @@
 const mockedEnv = require('mocked-env')
 const World = require('../src/world')
 const { remote } = require('webdriverio')
+const browsers = require('../src/browsers')
 
 jest.mock('webdriverio')
 remote.mockImplementation(() => mockRemote)
@@ -71,6 +72,45 @@ describe('World', () => {
         await world.open()
         await world.open()
         expect(remote).toHaveBeenCalledTimes(1)
+      })
+
+      it('supports local browser configs', async () => {
+        mockEnv({
+          SELENIUM_SERVER: 'hub.example.com'
+        })
+        const world = new World({
+          parameters: {
+            browser: 'puppeteer'
+          }
+        })
+        await world.open()
+        expect(remote).toHaveBeenCalledWith(
+          expect.objectContaining({
+            capabilities: browsers.puppeteer
+          })
+        )
+      })
+
+      it('respects SELENIUM_SERVER for non-local browsers', async () => {
+        mockEnv({
+          SELENIUM_SERVER: 'hub.example.com',
+          SELENIUM_USER: 'user',
+          SELENIUM_KEY: 'key'
+        })
+        const world = new World({
+          parameters: {
+            browser: 'chrome'
+          }
+        })
+        await world.open()
+        expect(remote).toHaveBeenCalledWith(
+          expect.objectContaining({
+            capabilities: browsers.chrome,
+            server: 'hub.example.com',
+            user: 'user',
+            key: 'key'
+          })
+        )
       })
 
       it('accepts an object for the "browser" parameter', async () => {

@@ -1,11 +1,4 @@
-const {
-  BROWSER_NAME,
-  BROWSER_VERSION,
-  CHROME_ARGS,
-  OS,
-  OS_VERSION,
-  BROWSER_LOCAL
-} = process.env
+const { CHROME_ARGS = '--headless --no-sandbox' } = process.env
 
 module.exports = {
   chrome: remote('Chrome', 'latest', {
@@ -40,14 +33,20 @@ module.exports = {
     local: true,
     browserName: 'chrome',
     'goog:chromeOptions': {
-      args: CHROME_ARGS
-        ? CHROME_ARGS.split(' ')
-        : ['--headless', '--no-sandbox']
+      args: CHROME_ARGS.split(' ')
     }
   }
 }
 
 function remote (browserName, version, { os, osVersion, ...options }) {
+  const {
+    BROWSER_NAME,
+    BROWSER_VERSION,
+    OS,
+    OS_VERSION,
+    BROWSER_LOCAL
+  } = process.env
+
   return {
     browserName: BROWSER_NAME || browserName,
     browserVersion: BROWSER_VERSION || version,

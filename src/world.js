@@ -2,15 +2,10 @@ const { remote } = require('webdriverio')
 const dot = require('dot-component')
 const browsers = require('./browsers')
 
-const {
-  BROWSER,
-  SELENIUM_USER,
-  SELENIUM_KEY,
-  SELENIUM_SERVER
-} = process.env
+const { BROWSER = 'puppeteer' } = process.env
 
 const defaults = {
-  browser: BROWSER || 'puppeteer',
+  browser: BROWSER,
   vars: process.env,
   webdriverOptions: {
     logLevel: 'trace'
@@ -72,6 +67,12 @@ module.exports = class World {
     }
     const capabilities = browsers[browser] || browser
     const options = Object.assign({ capabilities }, webdriverOptions)
+
+    const {
+      SELENIUM_USER,
+      SELENIUM_KEY,
+      SELENIUM_SERVER
+    } = process.env
     if (SELENIUM_SERVER && !capabilities.local) {
       Object.assign(options, {
         server: SELENIUM_SERVER,
