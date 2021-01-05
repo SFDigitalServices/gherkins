@@ -107,6 +107,37 @@ When I click on the "Apply now" link
 When I click on the "My name" input
 ```
 
+#### `When I click the element with {qualifier} {value}`
+This is a lower-level alternative to the above step that allows you to get
+more specific using a [qualifier](#qualifiers), for example:
+
+```feature
+// e.g. the search input on sf.gov
+When I click the element with placeholder 'Search'
+// could match a button or a link
+When I click the element with text 'Click me'
+```
+
+#### `When I press {key}`
+Simulates pressing a single key by character or [reference][key references], e.g.
+
+```feature
+// these are technically two different keys, but they're functionally
+// equivalent when activating UI elements
+When I press Enter
+When I press Return
+// Be explicit about presing the spacebar
+When I press Space
+```
+
+#### `When I type {string}`
+Simulates typing each character of the given string.
+
+```feature
+When I type "hello, world!"
+When I type " " // functionally equivalent to "When I press Space"
+```
+
 #### `When I wait for {number} second(s)`
 Pauses for the number of seconds (an integer or floating point number, e.g.
 `1.5`), which must not exceed the default timeout (10 seconds unless
@@ -146,3 +177,4 @@ saved anywhere (yet).
 [cucumber-js CLI]: https://github.com/cucumber/cucumber-js/blob/master/docs/cli.md#cli
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath
 [css selectors]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
+[key references]: https://w3c.github.io/webdriver/#keyboard-actions

@@ -16,6 +16,20 @@ When('I resize the window to {int}x{int}', async function (width, height) {
   return this.browser.setWindowSize(width, height || current.height)
 })
 
+When('I click the element with {word} {string}', async function (qualifier, value) {
+  const el = await this.elementWith(qualifier, value)
+  await el.waitForClickable()
+  return el.click()
+})
+
+When('I press {word}', function (key) {
+  return this.browser.keys([key])
+})
+
+When('I type {string}', function (string) {
+  return this.browser.keys(string.split(''))
+})
+
 Then('the URL should be {string}', async function (url) {
   const actual = await this.browser.getUrl()
   expect(actual).toBe(this.interpolate(url))
